@@ -20,7 +20,7 @@ exports.getHospital = (req, res, next) => {
 
 //@desc Create a hospital
 //@route POST /api/v1/hospitals
-//@access Public
+//@access Private
 exports.createHospital = (req, res, next) => {
     res.status(200).json({
         success: true,
