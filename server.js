@@ -3,7 +3,12 @@ const dotenv = require('dotenv');
 const res = require('express/lib/response');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
-
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
+const cors = require('cors');
 //Load variables
 dotenv.config({path:'./config/config.env'});
 
@@ -31,6 +36,29 @@ app.get('/', (req, res) => {
 //cookie-parser
 app.use(cookieParser());
 
+//Prevent NoSQL injection and Sanitize data
+app.use(mongoSanitize());
+
+//Set security helmet
+app.use(helmet());
+
+//Prevent XSS attacks (Cross site scripting)
+app.use(xss());
+
+//rate limiter
+const limiter = rateLimit({
+    wondowsMs: 10*60*1000, //10mins
+    max: 100
+})
+app.use(limiter);
+
+//prevent http param pollution
+app.use(hpp());
+
+//Enable CORS
+app.use(cors());
+
+//routers
 app.use('/api/v1/hospitals', hospitals);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/appointments', appointments);
